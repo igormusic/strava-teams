@@ -1,18 +1,16 @@
 ﻿Imports System.Net
 Imports System.Web.Configuration
 Imports System.Web.Http
+Imports Newtonsoft.Json.Linq
 
 Namespace Controllers
+    <SessionState(SessionStateBehavior.Required)>
     Public Class TokenController
-        Inherits ApiController
+        Inherits System.Web.Mvc.Controller
 
-        ' GET: api/Token
-        Public Function GetValues() As IEnumerable(Of String)
-            Return New String() {"value1", "value2"}
-        End Function
 
         ' GET: api/Token/5
-        Public Function GetValue(<FromUri> ByVal state As String, <FromUri> code As String) As String
+        Public Function Create(<FromUri> ByVal state As String, <FromUri> code As String) As RedirectToRouteResult
 
             Dim client_id = WebConfigurationManager.AppSettings("client_id")
             Dim client_secret = WebConfigurationManager.AppSettings("client_secret")
@@ -24,24 +22,12 @@ Namespace Controllers
             requestParams.Add("code", code)
             Dim responseBody = client.UploadValues("https://www.strava.com/oauth/token", "POST", requestParams)
             Dim responseText = Encoding.UTF8.GetString(responseBody)
+            Dim token = JObject.Parse(responseText)
 
+            HttpContext.Session("token") = token
+
+            Return Me.RedirectToAction("index", "Home")
         End Function
 
-        ' POST: api/Token
-        Public Sub PostValue(<FromBody()> ByVal value As String)
-
-
-
-        End Sub
-
-        ' PUT: api/Token/5
-        Public Sub PutValue(ByVal id As Integer, <FromBody()> ByVal value As String)
-
-        End Sub
-
-        ' DELETE: api/Token/5
-        Public Sub DeleteValue(ByVal id As Integer)
-
-        End Sub
     End Class
 End Namespace

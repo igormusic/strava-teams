@@ -1,4 +1,5 @@
-﻿Public Class HomeController
+﻿<SessionState(SessionStateBehavior.Required)>
+Public Class HomeController
     Inherits System.Web.Mvc.Controller
 
     Function Index() As ActionResult
